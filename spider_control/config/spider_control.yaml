@@ -1,0 +1,131 @@
+spider:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+  
+  # Position Controllers ---------------------------------------
+  joint_1_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_1_1
+  joint_1_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_1_2
+  joint_1_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_1_3
+  joint_2_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_2_1
+  joint_2_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_2_2
+  joint_2_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_2_3
+  joint_3_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_3_1
+  joint_3_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_3_2
+  joint_3_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_3_3
+  joint_4_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_4_1
+  joint_4_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_4_2
+  joint_4_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_4_3
+  joint_5_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_5_1
+  joint_5_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_5_2
+  joint_5_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_5_3
+  joint_6_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_6_1
+  joint_6_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_6_2
+  joint_6_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_6_3
+  joint_7_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_7_1
+  joint_7_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_7_2
+  joint_7_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_7_3
+  joint_8_1_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_8_1
+  joint_8_2_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_8_2
+  joint_8_3_position_controller:
+    type: position_controllers/JointPositionController
+    joint: joint_8_3
+ 
+  gazebo_ros_control/pid_gains:
+    joint_1_1: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_1_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_1_3: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_2_1: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_2_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_2_3: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_3_1: {p: 30.0, i: 20.0, d: 5.0}
+   
+    joint_3_2: {p: 30.0, i: 20.0, d: 5.0}
+  
+    joint_3_3: {p: 30.0, i: 20.0, d: 5.0}
+   
+    joint_4_1: {p: 30.0, i: 20.0, d: 5.0}
+  
+    joint_4_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_4_3: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_5_1: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_5_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_5_3: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_6_1: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_6_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_6_3: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_7_1: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_7_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_7_3: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_8_1: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_8_2: {p: 30.0, i: 20.0, d: 5.0}
+ 
+    joint_8_3: {p: 30.0, i: 20.0, d: 5.0}
+
+
+    

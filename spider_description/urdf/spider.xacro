@@ -1,0 +1,1573 @@
+<?xml version="1.0"?>
+<!-- Octapod -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="spider">
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass_chassis" value="0.4" /> <!-- arbitrary value for mass -->
+  <xacro:property name="mass_link" value="0.1" /><!--quarter the mass of chassis -->
+  <xacro:property name="mass_tactile" value="0.01" /> <!-- mass of the tactile dummy link -->
+  <xacro:property name="radius_chassis" value="0.5" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="height_chassis" value="0.1"/>  <!-- height of the cylinder that describes chasses -->
+  <xacro:property name="radius_link" value="0.1" /> <!-- Link 1 -->
+  <xacro:property name="height_link1_2" value="0.4" /> <!-- Link 2 -->
+  <xacro:property name="height_link_1_2" value="0.4"/> <!--to adjust the error as I misspelled height_link1_2-->
+  <xacro:property name="height_link_3" value="0.6" /> <!-- Link 3 -->
+  <xacro:property name="axel_offset" value="0.01" /> <!-- Space btw top of beam and the each joint -->
+  <xacro:property name="tactile_link" value="0.1"/><!--size of the tactile sensor-->
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find spider_description)/urdf/spider.gazebo" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find spider_description)/urdf/materials.xacro" />
+
+  <!-- chassis -->
+  <link name="chassis_dummy">
+   <collision>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="0.01" radius="${radius_chassis}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="0.01" radius="${radius_chassis}"/>
+        <!--mesh filename="package://spider_description/meshes/chassis_upper.dae"/ -->
+      </geometry>
+      <material name="orange"/>
+    </visual>
+    
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass_chassis}"/>
+      <inertia
+	  ixx="${(mass_chassis*(3*(radius_chassis)**2+(height_chassis)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_chassis*(3*(radius_chassis)**2+(height_chassis)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_chassis)**2)/2}"/>
+    </inertial>
+
+
+  </link>
+
+  <link name="chassis">
+    <collision>
+      <origin xyz="0 0 ${height_chassis/2}" rpy="0 0 0"/>
+      <geometry>
+      	<cylinder length="${height_chassis}" radius="${radius_chassis}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x001</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis/2}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_chassis}" radius="${radius_chassis}"/>
+        <mesh filename="package://spider_description/meshes/chassis_upper.dae"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+    
+  </link>
+
+  <joint name="joint_1" type="fixed">
+    <parent link="chassis"/>
+    <child link="chassis_dummy"/>
+  </joint>
+
+  <joint name="joint_1_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="left_torso_1_1"/>
+    <origin xyz="0 ${radius_chassis} ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <!-- left_torso_1_1 -->
+  <link name="left_torso_1_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_1_2" type="revolute">
+    <parent link="left_torso_1_1"/>
+    <child link="left_torso_1_2"/>
+    <origin xyz="0 0 ${height_link1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <!-- left_torso_1_2-->
+  <link name="left_torso_1_2">
+    <collision>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_1_3" type="revolute">
+    <parent link="left_torso_1_2"/>
+    <child link="left_torso_1_3"/>
+    <origin xyz="0 0 ${height_link1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <!-- left_torso_1_3 -->
+  <link name="left_torso_1_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_2_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="left_torso_2_1"/>
+    <origin xyz="${-0.707*radius_chassis} ${0.707*radius_chassis} ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <!-- Camera -->
+  <link name="left_torso_2_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_2_2" type="revolute">
+    <parent link="left_torso_2_1"/>
+    <child link="left_torso_2_2"/>
+    <origin xyz="0 0 ${height_link1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <!--left torso link 2_2-->
+  <link name="left_torso_2_2">
+    <collision>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_2_3" type="revolute">
+    <parent link="left_torso_2_2"/>
+    <child link="left_torso_2_3"/>
+    <origin xyz="0 0 ${height_link1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+  
+  <!--left torso link 2_3-->
+  <link name="left_torso_2_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+  
+  <joint name="joint_3_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="left_torso_3_1"/>
+    <origin xyz="${-radius_chassis} 0 ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+ 
+  <!--left torso link 3_1-->
+   <link name="left_torso_3_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+  
+  <joint name="joint_3_2" type="revolute">
+    <parent link="left_torso_3_1"/>
+    <child link="left_torso_3_2"/>
+    <origin xyz="0 0 ${height_link1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+  
+  <link name="left_torso_3_2">
+    <collision>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_3_3" type="revolute">
+    <parent link="left_torso_3_2"/>
+    <child link="left_torso_3_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="left_torso_3_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <!-- left torso link 4-->
+  <joint name="joint_4_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="left_torso_4_1"/>
+    <origin xyz="${-0.707*radius_chassis} ${-0.707*radius_chassis} ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="left_torso_4_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_4_2" type="revolute">
+    <parent link="left_torso_4_1"/>
+    <child link="left_torso_4_2"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="left_torso_4_2">
+    <collision>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+  
+  <joint name="joint_4_3" type="revolute">
+    <parent link="left_torso_4_2"/>
+    <child link="left_torso_4_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="left_torso_4_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_5_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="right_torso_1_1"/>
+    <origin xyz="0 ${-radius_chassis} ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="right_torso_1_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_5_2" type="revolute">
+    <parent link="right_torso_1_1"/>
+    <child link="right_torso_1_2"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+  
+  <link name="right_torso_1_2">
+    <collision>
+      <origin xyz="0 0 ${height_link1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+  
+  <joint name="joint_5_3" type="revolute">
+    <parent link="right_torso_1_2"/>
+    <child link="right_torso_1_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+  
+   <link name="right_torso_1_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_6_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="right_torso_2_1"/>
+    <origin xyz="${0.707*radius_chassis} ${-0.707*radius_chassis} ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="right_torso_2_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_6_2" type="revolute">
+    <parent link="right_torso_2_1"/>
+    <child link="right_torso_2_2"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="right_torso_2_2">
+    <collision>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_6_3" type="revolute">
+    <parent link="right_torso_2_2"/>
+    <child link="right_torso_2_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+  
+  <link name="right_torso_2_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_7_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="right_torso_3_1"/>
+    <origin xyz="${radius_chassis} 0 ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="right_torso_3_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_7_2" type="revolute">
+    <parent link="right_torso_3_1"/>
+    <child link="right_torso_3_2"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="right_torso_3_2">
+    <collision>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_7_3" type="revolute">
+    <parent link="right_torso_3_2"/>
+    <child link="right_torso_3_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+  
+  <link name="right_torso_3_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+ 
+  <joint name="joint_8_1" type="revolute">
+    <parent link="chassis"/>
+    <child link="right_torso_4_1"/>
+    <origin xyz="${0.707*radius_chassis} ${0.707*radius_chassis} ${height_chassis}" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+ 
+  <link name="right_torso_4_1">
+    <collision>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x010</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_chassis  + 20*axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_chassis + 20*axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_8_2" type="revolute">
+    <parent link="right_torso_4_1"/>
+    <child link="right_torso_4_2"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+   <link name="right_torso_4_2">
+    <collision>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x011</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_1_2}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_1_2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_1_2)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_8_3" type="revolute">
+    <parent link="right_torso_4_2"/>
+    <child link="right_torso_4_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7" friction="0.0"/>
+    <limit effort="30" velocity="10.0" lower="-3.14" upper="3.14" />
+    <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="2.5" />
+  </joint>
+
+  <link name="right_torso_4_3">
+    <collision>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <surface>
+       <contact>
+        <collide_bitmask>0x100</collide_bitmask>
+       </contact>
+      </surface>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+	<cylinder length="${height_link_3}" radius="${radius_link}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height_link_3 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass_link}"/>
+      <inertia
+	  ixx="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" ixy="0.0" ixz="0.0"
+	  iyy="${(mass_link*(3*(radius_link)**2+(height_link_3)**2))/2}" iyz="0.0"
+	  izz="${(mass_chassis*(radius_link)**2)/2}"/>
+    </inertial>
+  </link>
+
+  <joint name="tactile_1" type="fixed">
+    <parent link="left_torso_1_3"/>
+    <child link="tactile_sensor_1"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_1">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+  
+  <joint name="tactile_2" type="fixed">
+    <parent link="left_torso_2_3"/>
+    <child link="tactile_sensor_2"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_2">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+  <joint name="tactile_3" type="fixed">
+    <parent link="left_torso_3_3"/>
+    <child link="tactile_sensor_3"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_3">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+  <joint name="tactile_4" type="fixed">
+    <parent link="left_torso_4_3"/>
+    <child link="tactile_sensor_4"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_4">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+  <joint name="tactile_5" type="fixed">
+    <parent link="right_torso_1_3"/>
+    <child link="tactile_sensor_5"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_5">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+  <joint name="tactile_6" type="fixed">
+    <parent link="right_torso_2_3"/>
+    <child link="tactile_sensor_6"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_6">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+  <joint name="tactile_7" type="fixed">
+    <parent link="right_torso_3_3"/>
+    <child link="tactile_sensor_7"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_7">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+  <joint name="tactile_8" type="fixed">
+    <parent link="right_torso_4_3"/>
+    <child link="tactile_sensor_8"/>
+    <origin xyz="0 0 ${height_link_1_2}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tactile_sensor_8">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+    <box size="${tactile_link} ${tactile_link} ${tactile_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${(mass_tactile*(2*(tactile_link)**2))/12}" ixy="0" ixz="0" iyy="${(mass_tactile*(2*(tactile_link)**2))/12}" iyz="0" izz="${(mass_tactile*(2*(tactile_link)**2))/12}" />
+    </inertial>
+  </link>
+
+
+
+
+  <transmission name="tran1_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_1_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran1_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_1_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran1_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_1_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1_3">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+ 
+  <transmission name="tran2_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_2_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran2_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_2_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran2_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_2_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2_3">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran3_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_3_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran3_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_3_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran3_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_3_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3_3">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran4_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_4_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran4_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_4_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran4_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_4_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4_3">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran5_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_5_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran5_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_5_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran5_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_5_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5_3">
+     <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+     <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran6_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_6_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran6_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_6_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran6_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_6_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6_3">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran7_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_7_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor7_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran7_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_7_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor7_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran7_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_7_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor7_3">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran8_1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_8_1">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8_1">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran8_2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_8_2">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8_2">
+      <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran8_3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_8_3">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8_3">
+     <!--hardwareInterface>PositionJointInterface</hardwareInterface-->
+     <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+</robot>

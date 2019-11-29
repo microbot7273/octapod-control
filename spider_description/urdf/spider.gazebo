@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<robot>
+
+  <!-- ros_control plugin -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>spider</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+
+  <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+    <robotNamespace>spider</robotNamespace>
+    <jointName>
+     joint_1_1,joint_1_2,joint_1_3,joint_2_1,joint_2_2,joint_2_3,joint_3_1,joint_3_2,joint_3_3,joint_4_1,joint_4_2,joint_4_3,joint_5_1,joint_5_2,joint_5_3,joint_6_1,joint_6_2,joint_6_3,joint_7_1,joint_7_2,joint_7_3,joint_8_1,joint_8_2,joint_8_3
+    </jointName>
+    <updateRate>100</updateRate>
+    <alwaysOn>true</alwaysOn>
+  </plugin>
+
+  <!-- chassis -->
+  <gazebo reference="chassis">
+    <material>Gazebo/Orange</material>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+
+  <!-- Link1_1 -->
+  <gazebo reference="left_torso_1_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link1_2 -->
+  <gazebo reference="left_torso_1_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link1_3 -->
+  <gazebo reference="left_torso_1_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link2_1 -->
+  <gazebo reference="left_torso_2_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link2_2 -->
+  <gazebo reference="left_torso_2_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link2_3 -->
+  <gazebo reference="left_torso_2_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link3_1 -->
+  <gazebo reference="left_torso_3_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link3_2 -->
+  <gazebo reference="left_torso_3_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link3_3 -->
+  <gazebo reference="left_torso_3_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link4_1 -->
+  <gazebo reference="left_torso_4_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link4_2 -->
+  <gazebo reference="left_torso_4_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link4_3 -->
+  <gazebo reference="left_torso_4_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link5_1 -->
+  <gazebo reference="right_torso_1_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link5_2 -->
+  <gazebo reference="right_torso_1_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- camera_link -->
+  <gazebo reference="camera_link">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <!-- Link5_3 -->
+  <gazebo reference="right_torso_1_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link6_1 -->
+  <gazebo reference="right_torso_2_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link6_2 -->
+  <gazebo reference="right_torso_2_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link6_3 -->
+  <gazebo reference="right_torso_2_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link7_1 -->
+  <gazebo reference="right_torso_3_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link7_2 -->
+  <gazebo reference="right_torso_3_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link7_3 -->
+  <gazebo reference="right_torso_3_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link8_1 -->
+  <gazebo reference="right_torso_4_1">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link8_2 -->
+  <gazebo reference="right_torso_4_2">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Link8_3 -->
+  <gazebo reference="right_torso_4_3">
+    <selfCollide>true</selfCollide>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+  
+  <!--adding tactile sensor -->
+  <gazebo reference="tactile_1">
+  <sensor type="contact" name="sr_tactile_virtual_1">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_1" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_1</topicName>
+      <frameName>sr_tactile_sensor_1</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+
+ <gazebo reference="tactile_2">
+  <sensor type="contact" name="sr_tactile_virtual_2">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_2" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_2</topicName>
+      <frameName>sr_tactile_sensor_2</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+  
+ <gazebo reference="tactile_3">
+  <sensor type="contact" name="sr_tactile_virtual_3">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_3" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_3</topicName>
+      <frameName>sr_tactile_sensor_3</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+
+<gazebo reference="tactile_4">
+  <sensor type="contact" name="sr_tactile_virtual_4">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_4" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_4</topicName>
+      <frameName>sr_tactile_sensor_4</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+
+ <gazebo reference="tactile_5">
+  <sensor type="contact" name="sr_tactile_virtual_5">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_5" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_5</topicName>
+      <frameName>sr_tactile_sensor_5</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+
+ <gazebo reference="tactile_6">
+  <sensor type="contact" name="sr_tactile_virtual_6">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_6" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_6</topicName>
+      <frameName>sr_tactile_sensor_6</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+
+ <gazebo reference="tactile_7">
+  <sensor type="contact" name="sr_tactile_virtual_7">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_7" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_7</topicName>
+      <frameName>sr_tactile_sensor_7</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+ 
+ <gazebo reference="tactile_8">
+  <sensor type="contact" name="sr_tactile_virtual_8">
+    <pose>0.0 0.0 0.0 0.0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>10</update_rate>
+    <ray>
+      <range>
+        <min>0.00</min>
+        <max>100.0</max>
+      </range>
+    </ray>
+    <plugin name="sr_tactile_virtual_8" filename="libblock_sr_tactile_virtual.so">
+      <topicName>/sr_tactile_sensor_8</topicName>
+      <frameName>sr_tactile_sensor_8</frameName>
+      <alwaysOn>true</alwaysOn>
+      <gaussianNoise>0.00</gaussianNoise>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </sensor>
+</gazebo>
+
+
+</robot>
